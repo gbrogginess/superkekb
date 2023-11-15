@@ -1,91 +1,32 @@
-# Build a parser for the following example
-content = \
-'''
- DRIFT  LV3P    =(L =.7180000000000637 )   LVB1    =(L =2.155128152146129 )   LVB2    =(L =3.9 )   LV4P    =(L =.5897999999999363 )
-        LX097B  =(L =.09741 )       LP1696  =(L =.16961 )       LV2P    =(L =.8898 ) LZVQ    =(L =.3444 ) LX08279 =(L =.08279 )
-        LV1PW   =(L =3.057705 )     LZHQL   =(L =.34442 )       LV0P2B  =(L =.5697999999998791 )   LV0P2A  =(L =.4999999999999453 )
-        LV0P2   =(L =2.3329150000001753 )  LZVQL   =(L =.34442 )       LX083   =(L =.08279 )       LP158   =(L =.15814 )
-        LX086   =(L =.08593 )       LXRF3P  =(L =2.20464 )      LXRF2   =(L =3.093 ) LXRF1P  =(L =1.93964 )
- ;
- BEND   BV2P    =(L =1.4  ANGLE =-.0112  E2 =1     ROTATE =-90 DEG     F1 =.2224 FRINGE =1 )
-        BV1P    =(L =1.4  ANGLE =.0112   E1 =1     ROTATE =-90 DEG     F1 =.2224 FRINGE =1 )
-        ZVQV1P2 =(L =.3444     ANGLE =0  ROTATE =-90 DEG )
-        ZHQV2P2 =(L =.34442    ANGLE =0 )
-        ZVQV3P2 =(L =.3444     ANGLE =0  ROTATE =-90 DEG )
-        ZHQV4P2 =(L =.34442    ANGLE =0 )
-        ZVQDRP3 =(L =.34442    ANGLE =0  ROTATE =-90 DEG )
-        ZHQFRP3 =(L =.34442    ANGLE =0 )
-        ZVQDRP4 =(L =.34442    ANGLE =0  ROTATE =-90 DEG )
-        ZHQI2P  =(L =.34442    ANGLE =0 )
-        ZVQI3P  =(L =.34442    ANGLE =0  ROTATE =-90 DEG )
-        ZHQI4P  =(L =.3444     ANGLE =0 )
-        FZHINJ2P1=(L =.225     ANGLE =0 )
-        FZHINJ2P2=(L =.225     ANGLE =0 )
-        FZHINJ2P3=(L =.225     ANGLE =0 )
-        FZVKICKP=(L =.075 ANGLE =0  ROTATE =-90 DEG )
-        ZVQI5P  =(L =.3444     ANGLE =0  ROTATE =-90 DEG )
-        ZHQI6P  =(L =.34442    ANGLE =0 )
-        FZHABP  =(L =.35  ANGLE =0 )
-        ZVQI7P  =(L =.3444     ANGLE =0  ROTATE =-90 DEG )
-        FZVABP  =(L =.35  ANGLE =0  ROTATE =-90 DEG )
-        FZHINJ1P1=(L =.225     ANGLE =0 )
- ;
- QUAD   QV1P    =(L =.46078    K1 =-.2205049955295678   F1 =.16125     FRINGE =3 )
-        QV2P    =(L =.46078    K1 =.271911686017982     F1 =.16125     FRINGE =3 )
-        QV3P    =(L =.46078    K1 =-.19903769789571335  F1 =.16125     FRINGE =3 )
-        QV4P    =(L =.58372    K1 =.11050994279247003   F1 =.21401     FRINGE =3 )
-        QW7NLP  =(L =.46078    K1 =-.31790860060351733  F1 =.16125     FRINGE =3 )
- OCT    OL2TLP  =(K3 =0 )
- ;
- MULT   FZLFBKP1=(L =.88  K1 =0 )
-        ECSRP3995=(L =.01 EPS =100  F1 =.01   FRINGE =3 SK0 =-7.886685741120809e-07   K1 =0     SK1 =-2.108983931768349e-07
-           SK2 =4.6651636556700176e-07   SK3 =-2.2321917594729385e-05  SK4 =.0036925110761403357     SK5 =.06411877893882616
-           SK6 =-331.2445015589813  SK7 =-84406.81765613961  SK8 =-5365351.42685531   SK9 =-4076130994.1061025 )
-        ECSRP3985=(L =.01 EPS =100  F1 =.01   FRINGE =3 SK0 =-1.0045031810293957e-06  K1 =0     SK1 =-2.721216845774712e-07
-           SK2 =4.596195286683431e-07    SK3 =-1.6134064339572768e-05  SK4 =.002106760461659329 SK5 =.08127684487928556
-           SK6 =-110.75281267465859 SK7 =-70480.02624105639  SK8 =4399515.024588399   SK9 =-1287702227.1680777 )
-        ECSRP3975=(L =.01 EPS =100  F1 =.01   FRINGE =3 SK0 =-1.1249516019636977e-06  K1 =0     SK1 =-2.986693622855141e-07
-           SK2 =2.912747497934001e-07    SK3 =-3.839265927040157e-05   SK4 =.0013749232212443355     SK5 =.056580876461193454
-           SK6 =-97.28833569092969  SK7 =-65437.06998678671  SK8 =-8177321.546410451  SK9 =94018634.45805164 )
-        ECSRP3965=(L =.01 EPS =100  F1 =.01   FRINGE =3 SK0 =-1.2025023518447357e-06  K1 =0     SK1 =-3.1040226902195583e-07
-           SK2 =3.223189120954935e-08    SK3 =-2.636204065162733e-05   SK4 =-8.990831488005905e-05   SK5 =.6929769985789139
-           SK6 =-183.24817275530984 SK7 =-79626.82323674297  SK8 =-17579350.019726444 SK9 =832161339.1491956 )
-        ECSLP3925=(L =.01 EPS =100  F1 =.01   FRINGE =3 SK0 =-5.455518502191653e-08   K1 =0     SK1 =3.357772741296785e-08
-           SK2 =-2.006810882698533e-07   SK3 =8.98537076775315e-06     SK4 =-.00045937886165338073   SK5 =-.2629006443015081
-           SK6 =-1.1847720549854615 SK7 =3870.159015742937   SK8 =-1558477.1874569007 SK9 =-223592995.08970693 )
- ;
- SOL    ESRP4000=(BZ =-.004100884693715533    DX =.0030685207626296503 DY =6.36019632368984e-05 DZ =4.009551044211438e-06
-           BOUND =1  CHI1 =-.0015510848898465843   CHI2 =.0003595251166946121    CHI3 =-5.584011306763706e-07  F1 =.01 )
-        ESRP3990=(BZ =-.005210346755970976    F1 =.01 )
-        ESRP3980=(BZ =-.005863286312726826    F1 =.01 )
-        ESRP3970=(BZ =-.006263713040382252    F1 =.01 )
-;
- CAVI   CAAFLP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CABFLP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CACFLP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CADFLP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAEFLP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAFFLP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAFORP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAEORP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CADORP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CACORP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CABORP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAAORP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAFFRP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAEFRP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CADFRP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CACFRP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CABFRP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
-        CAAFRP  =(VOLT =376363.63636363624    FREQ =508879779.09848714 )
- ;
-'''
+import json
+fname = 'sler_1705_60_06_cw50_4b.plain.sad'
+
+with open(fname, 'r') as f:
+    content = f.read()
+
 content = content.lower() # make it lower case
+
+new_lines = []
+for il, ll in enumerate(content.split('\n')):
+    lll = ll.strip() # remove leading and trailing spaces
+    if lll.startswith('momentum'):
+        continue
+    if lll.startswith('fshift'):
+        continue
+    if lll.startswith('line'):
+        break
+    new_lines.append(lll)
+
+content = '\n'.join(new_lines)
+
+if content[0] == ';':
+    content = content[1:] # remove first ';'
+
+content = content.split('line')[0] # remove everything after 'line'
+
 content = content.replace('(', 'dict(').replace(')', '),')
 content = content.replace('deg', '')
 content = content.replace(';', '),')
-
-
 
 while ' =' in content:
     content = content.replace(' =', '=')
@@ -106,7 +47,18 @@ for il, ll in enumerate(lines):
 content = '\n'.join(lines)
 content ='dict(\n' + content + '\n)'
 
-for command in 'drift', 'bend', 'quad', 'oct', 'mult', 'sol', 'cavi':
+for command in ('drift', 'bend', 'quad', 'oct', 'mult', 'sol', 'cavi',
+                'mark', 'moni', 'beambeam', 'apert'):
     content = content.replace(command, f'{command}=dict(')
 
-content += '\n)'
+while ',,' in content:
+    content = content.replace(',,', ',')
+
+with open(fname.replace('.plain.sad', '.py'), 'w') as f:
+    f.write(content)
+
+d = eval(content)
+
+# save as json
+with open(fname.replace('.plain.sad', '.json'), 'w') as f:
+    json.dump(d, f, indent=2)
