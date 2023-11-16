@@ -123,7 +123,7 @@ for nn in d['line']:
 
 
     if nn not in element_counts:
-        element_counts[nn] = 0
+        element_counts[nn] = 1
     else:
         element_counts[nn] += 1
 
@@ -177,6 +177,8 @@ line.particle_ref = xt.Particles(p0c=4e9, mass0=xt.ELECTRON_MASS_EV)
 twiss_fname = 'sler_1705_60_06_cw50_4b.twiss.json'
 with open(twiss_fname, 'r') as f:
     tw_dict = json.load(f)
+
+tw_dict['Element'] = np.array([nn.lower() for nn in tw_dict['Element']])
 
 tw_sad = xt.Table(
         {
