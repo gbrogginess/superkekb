@@ -4,6 +4,7 @@ import json
 import numpy as np
 
 fname = 'sler_1705_60_06_cw50_4b.json'
+fname = 'sler_1707_80_1_simple.sad.json'
 
 with open(fname, 'r') as fid:
     d = json.load(fid)
@@ -72,7 +73,7 @@ for nn, vv in d['quad'].items():
         assert np.abs(vv['rotate']) == 45
         # TODO: neglecting skew for not
         imported_elems[nn] = xt.Drift(length=vv['l'])
-    imported_elems[nn] = xt.Quadrupole(length=vv['l'], k1=vv['k1'])
+    imported_elems[nn] = xt.Quadrupole(length=vv['l'], k1=vv['k1']/vv['l'])
     # TODO: neglecting fringes for now
 
 for nn, vv in d['mult'].items():
@@ -101,15 +102,17 @@ for nn, vv in d['apert'].items():
     assert 'l' not in vv
     imported_elems[nn] = xt.Marker()
 
-for nn, vv in d['sol'].items():
-    assert 'l' not in vv
-    # TODO neglecting solenoids for now
-    imported_elems[nn] = xt.Marker()
+if 'sol' in d:
+    for nn, vv in d['sol'].items():
+        assert 'l' not in vv
+        # TODO neglecting solenoids for now
+        imported_elems[nn] = xt.Marker()
 
-for nn, vv in d['beambeam'].items():
-    assert 'l' not in vv
-    # TODO neglecting beambeam for now
-    imported_elems[nn] = xt.Marker()
+if 'beambeam' in d:
+    for nn, vv in d['beambeam'].items():
+        assert 'l' not in vv
+        # TODO neglecting beambeam for now
+        imported_elems[nn] = xt.Marker()
 
 element_names = []
 elements = []
@@ -144,16 +147,16 @@ for nn in d['line']:
                                       xt.SRotation, xt.DipoleEdge))
             if isinstance(ee, xt.Bend):
                 ee = ee.copy()
-                ee.h *= -1
-                ee.k0 *= -1
+                # ee.h *= -1
+                # ee.k0 *= -1
             elif isinstance(ee, xt.DipoleEdge):
                 ee = ee.copy()
                 ee.k *= -1
                 ee.e1 *= -1
                 ee.side = 'entry' if ee.side == 'exit' else 'exit'
-            elif isinstance(ee, xt.Quadrupole):
-                ee = ee.copy()
-                ee.k1 *= -1
+            # elif isinstance(ee, xt.Quadrupole):
+            #     ee = ee.copy()
+            #     ee.k1 *= -1
             elif isinstance(ee, xt.SRotation):
                 ee = ee.copy()
                 ee.angle *= -1
@@ -202,3 +205,18 @@ elems_in_common = np.intersect1d(tw_sad['name'], tt.name)
 
 tt_common = tt.rows[elems_in_common]
 tsad_common = tw_sad.rows[elems_in_common]
+
+sv = line.survey()
+
+two = line.twiss(
+        _continue_if_lost=True,
+        ele_start=line.element_names[0],
+        ele_stop=len(line.element_names)-1,
+        twiss_init=xt.TwissInit(betx=tw_sad['betx'][0],
+                                alfx=tw_sad['alfx'][0],
+                                bety=tw_sad['bety'][0],
+                                alfy=tw_sad['alfy'][0],
+                                dx=tw_sad['dx'][0],
+                                dy=tw_sad['dy'][0],
+                                dpx=tw_sad['dpx'][0],
+                                dpy=tw_sad['dpy'][0]))

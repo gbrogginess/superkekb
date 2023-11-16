@@ -1,5 +1,6 @@
 import json
 fname = 'sler_1705_60_06_cw50_4b.plain.sad'
+fname = 'sler_1707_80_1_simple.sad'
 
 with open(fname, 'r') as f:
     content = f.read()
@@ -60,5 +61,5 @@ for ss in sections:
         out['line'] = ele_str_list
 
 # save as json
-with open(fname.replace('.plain.sad', '.json'), 'w') as f:
+with open(fname.replace('.plain.sad', '') + '.json', 'w') as f:
     json.dump(out, f, indent=2)
