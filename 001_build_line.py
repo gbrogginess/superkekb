@@ -53,9 +53,10 @@ for nn in bends_on:
                                 fint=vv['f1'],
                                 side='entry'))
 
-        oo.append(xt.Bend(k0=k0, h=h, length=length))
+    oo.append(xt.Bend(k0=k0, h=h, length=length))
 
-        oo.append(xt.DipoleEdge(k=k0, e1=vv['e1']*angle,
+    if 'e2' in vv:
+        oo.append(xt.DipoleEdge(k=k0, e1=vv['e2']*angle,
                                 hgap=1/6, #linear drop-off (see madx manual)
                                 fint=vv['f1'],
                                 side='exit'))
@@ -195,3 +196,9 @@ tw_sad = xt.Table(
             'dpx':  np.array(tw_dict['EPX']),
             'dpy':  np.array(tw_dict['EPY']),
         })
+
+tt = line.get_table()
+elems_in_common = np.intersect1d(tw_sad['name'], tt.name)
+
+tt_common = tt.rows[elems_in_common]
+tsad_common = tw_sad.rows[elems_in_common]
