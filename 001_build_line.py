@@ -8,13 +8,13 @@ fname = 'sler_1705_60_06_cw50_4b.json'
 with open(fname, 'r') as fid:
     d = json.load(fid)
 
-elements = {}
+imported_elems = {}
 
 # drift
 drifts = d['drift']
 for nn, vv in drifts.items():
     assert len(vv.keys()) == 1
-    elements[nn] = xt.Drift(length=vv['l'])
+    imported_elems[nn] = xt.Drift(length=vv['l'])
 
 # bends
 bends = d['bend']
@@ -29,9 +29,9 @@ for nn, vv in bends.items():
 for nn in bends_off:
     vv = bends[nn]
     if 'l' in vv:
-        elements[nn] = xt.Drift(length=vv['l'])
+        imported_elems[nn] = xt.Drift(length=vv['l'])
     else:
-        elements[nn] = xt.Marker
+        imported_elems[nn] = xt.Marker()
 
 for nn in bends_on:
     vv = bends[nn]
@@ -63,30 +63,84 @@ for nn in bends_on:
     if 'rotate' in vv:
         oo.append(xt.SRotation(angle=vv['rotate']))
 
-    elements[nn] = oo
+    imported_elems[nn] = oo
 
 for nn, vv in d['quad'].items():
 
     if 'rotate' in vv:
         assert np.abs(vv['rotate']) == 45
         # TODO: neglecting skew for not
-        elements[nn] = xt.Drift(length=vv['l'])
-    elements[nn] = xt.Quadrupole(length=vv['l'], k1=vv['k1'])
+        imported_elems[nn] = xt.Drift(length=vv['l'])
+    imported_elems[nn] = xt.Quadrupole(length=vv['l'], k1=vv['k1'])
     # TODO: neglecting fringes for now
 
 for nn, vv in d['mult'].items():
     # TODO neglecting multipoles for now
-    elements[nn] = xt.Drift(length=vv.get('l', 0))
+    imported_elems[nn] = xt.Drift(length=vv.get('l', 0))
 
 for nn, vv in d['oct'].items():
     assert 'l' not in vv
     # TODO neglecting octupoles for now
-    elements[nn] = xt.Marker()
+    imported_elems[nn] = xt.Marker()
 
 for nn, vv in d['cavi'].items():
     assert 'l' not in vv
     # TODO neglecting cavities for now
-    elements[nn] = xt.Marker()
+    imported_elems[nn] = xt.Marker()
+
+for nn, vv in d['moni'].items():
+    assert 'l' not in vv
+    imported_elems[nn] = xt.Marker()
+
+for nn, vv in d['mark'].items():
+    assert 'l' not in vv
+    imported_elems[nn] = xt.Marker()
+
+for nn, vv in d['apert'].items():
+    assert 'l' not in vv
+    imported_elems[nn] = xt.Marker()
+
+for nn, vv in d['sol'].items():
+    assert 'l' not in vv
+    # TODO neglecting solenoids for now
+    imported_elems[nn] = xt.Marker()
+
+for nn, vv in d['beambeam'].items():
+    assert 'l' not in vv
+    # TODO neglecting beambeam for now
+    imported_elems[nn] = xt.Marker()
+
+element_names = []
+elements = []
+element_counts = {}
+for nn in d['line']:
+
+    if nn.startswith('-'):
+        inverted = True
+        nn = nn[1:]
+    else:
+        inverted = False
+
+
+    if nn not in element_counts:
+        element_counts[nn] = 0
+    else:
+        element_counts[nn] += 1
+
+    if element_counts[nn] == 0:
+        xs_name = nn
+    else:
+        xs_name = nn + '.' + str(element_counts[nn])
+
+    to_insert = imported_elems[nn]
+
+    if isinstance(to_insert, list):
+        for iee, ee in enumerate(to_insert):
+            elements.append(ee.copy())
+            element_names.append(xs_name + ':' + str(iee))
+    else:
+        elements.append(to_insert.copy())
+        element_names.append(xs_name)
 
 
 
