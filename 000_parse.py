@@ -46,7 +46,11 @@ for ss in sections:
 
         ss_py += ')'
 
-        out[ss_command] = eval(ss_py)
+        dct = eval(ss_py)
+        if ss_command in out:
+            out[ss_command].update(dct)
+        else:
+            out[ss_command] = dct
 
     if ss_command == 'line':
         ele_str = ss.split('=')[-1]
