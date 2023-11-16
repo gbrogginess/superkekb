@@ -134,6 +134,34 @@ for nn in d['line']:
 
     to_insert = imported_elems[nn]
 
+    if inverted:
+        to_insert_inverted = []
+        if not isinstance(to_insert, list):
+            to_insert = [to_insert]
+        for ee in to_insert:
+            assert isinstance(ee, (xt.Drift, xt.Marker, xt.Bend, xt.Quadrupole,
+                                      xt.SRotation, xt.DipoleEdge))
+            if isinstance(ee, xt.Bend):
+                ee = ee.copy()
+                ee.h *= -1
+                ee.k0 *= -1
+            elif isinstance(ee, xt.DipoleEdge):
+                ee = ee.copy()
+                ee.k *= -1
+                ee.e1 *= -1
+                ee.side = 'entry' if ee.side == 'exit' else 'exit'
+            elif isinstance(ee, xt.Quadrupole):
+                ee = ee.copy()
+                ee.k1 *= -1
+            elif isinstance(ee, xt.SRotation):
+                ee = ee.copy()
+                ee.angle *= -1
+            to_insert_inverted.append(ee)
+
+        to_insert = to_insert_inverted
+        if len(to_insert) == 1:
+            to_insert = to_insert[0]
+
     if isinstance(to_insert, list):
         for iee, ee in enumerate(to_insert):
             elements.append(ee.copy())
