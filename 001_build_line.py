@@ -173,4 +173,23 @@ for nn in d['line']:
 line = xt.Line(elements=elements, element_names=element_names)
 line.particle_ref = xt.Particles(p0c=4e9, mass0=xt.ELECTRON_MASS_EV)
 
+# Load SAD twiss table
+twiss_fname = 'sler_1705_60_06_cw50_4b.twiss.json'
+with open(twiss_fname, 'r') as f:
+    tw_dict = json.load(f)
 
+tw_sad = xt.Table(
+        {
+            'name': np.array(tw_dict['Element']),
+            's':    np.array(tw_dict['s(m)']),
+            'betx': np.array(tw_dict['BX']),
+            'alfx': np.array(tw_dict['AX']),
+            'bety': np.array(tw_dict['BY']),
+            'alfy': np.array(tw_dict['AY']),
+            'mux':  np.array(tw_dict['NX']),
+            'muy':  np.array(tw_dict['NY']),
+            'dx':   np.array(tw_dict['EX']),
+            'dy':   np.array(tw_dict['EY']),
+            'dpx':  np.array(tw_dict['EPX']),
+            'dpy':  np.array(tw_dict['EPY']),
+        })
