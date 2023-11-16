@@ -170,6 +170,7 @@ for nn in d['line']:
         elements.append(to_insert.copy())
         element_names.append(xs_name)
 
-
+line = xt.Line(elements=elements, element_names=element_names)
+line.particle_ref = xt.Particles(p0c=4e9, mass0=xt.ELECTRON_MASS_EV)
 
 
