@@ -4,7 +4,7 @@ import json
 import numpy as np
 
 fname = 'sler_1705_60_06_cw50_4b.json'
-fname = 'sler_1707_80_1_simple.sad.json'
+# fname = 'sler_1707_80_1_simple.sad.json'
 
 with open(fname, 'r') as fid:
     d = json.load(fid)
@@ -151,9 +151,9 @@ for nn in d['line']:
                 # ee.k0 *= -1
             elif isinstance(ee, xt.DipoleEdge):
                 ee = ee.copy()
-                ee.k *= -1
-                ee.e1 *= -1
-                ee.side = 'entry' if ee.side == 'exit' else 'exit'
+                # ee.k *= -1
+                # ee.e1 *= -1
+                # ee.side = 'entry' if ee.side == 'exit' else 'exit'
             # elif isinstance(ee, xt.Quadrupole):
             #     ee = ee.copy()
             #     ee.k1 *= -1
@@ -206,13 +206,15 @@ elems_in_common = np.intersect1d(tw_sad['name'], tt.name)
 tt_common = tt.rows[elems_in_common]
 tsad_common = tw_sad.rows[elems_in_common]
 
+line.build_tracker()
+
 sv = line.survey()
 
 two = line.twiss(
         _continue_if_lost=True,
-        ele_start=line.element_names[0],
-        ele_stop=len(line.element_names)-1,
-        twiss_init=xt.TwissInit(betx=tw_sad['betx'][0],
+        start=line.element_names[0],
+        end=line.element_names[-1],
+        init=xt.TwissInit(betx=tw_sad['betx'][0],
                                 alfx=tw_sad['alfx'][0],
                                 bety=tw_sad['bety'][0],
                                 alfy=tw_sad['alfy'][0],
@@ -220,3 +222,26 @@ two = line.twiss(
                                 dy=tw_sad['dy'][0],
                                 dpx=tw_sad['dpx'][0],
                                 dpy=tw_sad['dpy'][0]))
+
+betx_sad = np.interp(two.s, tw_sad.s, tw_sad.betx)
+bety_sad = np.interp(two.s, tw_sad.s, tw_sad.bety)
+
+import matplotlib.pyplot as plt
+plt.close('all')
+plt.figure(1)
+ax1 = plt.subplot(2,1,1)
+plt.plot(two.s, two.betx / betx_sad - 1, '.-', label='x')
+plt.ylim(-0.5, 0.5)
+ax2 = plt.subplot(2,1,2, sharex=ax1)
+plt.plot(two.s, two.bety / bety_sad - 1, '.-', label='y')
+plt.ylim(-0.5, 0.5)
+
+plt.figure(2)
+ax1 = plt.subplot(2,1,1)
+plt.plot(two.s, two.betx, '.-', label='x')
+plt.plot(two.s, betx_sad, '.-', label='x sad')
+ax2 = plt.subplot(2,1,2, sharex=ax1)
+plt.plot(two.s, two.bety, '.-', label='y')
+plt.show()
+
+

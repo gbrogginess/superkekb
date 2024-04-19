@@ -20,6 +20,7 @@ content = content.replace('deg', '')
 
 sections = content.split(';')
 out = {}
+out_py = {}
 for ss in sections:
     ss_py = ss
     ss_py = ss_py.strip()
@@ -51,6 +52,8 @@ for ss in sections:
             out[ss_command].update(dct)
         else:
             out[ss_command] = dct
+
+    out_py[ss_command] = ss_py
 
     if ss_command == 'line':
         ele_str = ss.split('=')[-1]
