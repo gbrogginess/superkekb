@@ -213,54 +213,49 @@ line.build_tracker()
 
 sv = line.survey()
 
+ele_start_xs = 'lm6flp.1'
+ele_start_sad = 'lm6flp'
+
 two = line.twiss(
         _continue_if_lost=True,
-        start=line.element_names[0],
+        strengths=True,
+        start=ele_start_xs,
         end=line.element_names[-1],
-        init=xt.TwissInit(betx=tw_sad['betx'][0],
-                                alfx=tw_sad['alfx'][0],
-                                bety=tw_sad['bety'][0],
-                                alfy=tw_sad['alfy'][0],
-                                dx=tw_sad['dx'][0],
-                                dy=tw_sad['dy'][0],
-                                dpx=tw_sad['dpx'][0],
-                                dpy=tw_sad['dpy'][0]))
+        init=xt.TwissInit(betx=tw_sad['betx', ele_start_sad],
+                          alfx=tw_sad['alfx', ele_start_sad],
+                          bety=tw_sad['bety', ele_start_sad],
+                          alfy=tw_sad['alfy', ele_start_sad],
+                          dx=tw_sad['dx', ele_start_sad],
+                          dy=tw_sad['dy', ele_start_sad],
+                          dpx=tw_sad['dpx', ele_start_sad],
+                          dpy=tw_sad['dpy', ele_start_sad]))
 
 betx_sad = np.interp(two.s, tw_sad.s, tw_sad.betx)
 bety_sad = np.interp(two.s, tw_sad.s, tw_sad.bety)
 
 import matplotlib.pyplot as plt
+
+tw_sad = tw_sad.rows[0:1500:'s']
+two = two.rows[0:1500:'s']
+
 plt.close('all')
 plt.figure(1)
-ax1 = plt.subplot(2,1,1)
-plt.plot(two.s, two.betx / betx_sad - 1, '.-', label='x')
-plt.ylim(-0.5, 0.5)
-ax2 = plt.subplot(2,1,2, sharex=ax1)
-plt.plot(two.s, two.bety / bety_sad - 1, '.-', label='y')
-plt.ylim(-0.5, 0.5)
 
-plt.figure(2)
-ax1 = plt.subplot(2,1,1)
-plt.plot(two.s, two.betx, '.-', label='x')
-plt.plot(two.s, betx_sad, '.-', label='x sad')
-ax2 = plt.subplot(2,1,2, sharex=ax1)
-plt.plot(two.s, two.bety, '.-', label='y')
+ax1 = plt.subplot(3,1,1)
+plt.plot(tw_sad.s, tw_sad.betx, label='sad')
+plt.plot(two.s, two.betx, label='xtrack')
+plt.ylabel('betx')
 
-plt.figure(3)
-plt.plot(sv.Z, sv.X, label='xsuite')
-plt.plot(sv_sad['Gx'], -np.array(sv_sad['Gy']), label='sad')
+ax2 = plt.subplot(3,1,2, sharex=ax1)
+plt.plot(tw_sad.s, tw_sad.bety, label='sad')
+plt.plot(two.s, two.bety, label='xtrack')
+plt.ylabel('bety')
 
-plt.figure(4)
-plt.plot(sv.s, sv.X, label='xsuite')
-plt.plot(sv_sad['s'], -np.array(sv_sad['Gy']), label='sad')
-
-plt.figure(5)
-sp1 = plt.subplot(2,1,1)
-plt.plot(tw_sad.s, tw_sad.betx, '.-', label='betx')
-plt.plot(tw_sad.s, tw_sad.bety, '.-', label='bety')
-sp2 = plt.subplot(2,1,2, sharex=sp1)
-plt.plot(tw_sad.s, tw_sad.dx, label='dx')
+ax3 = plt.subplot(3,1,3, sharex=ax1)
+plt.plot(tw_sad.s, tw_sad.dx, label='sad')
+plt.plot(two.s, two.dx, label='xtrack')
+plt.plot(tw_sad.s, tw_sad.dy, label='sad')
+plt.plot(two.s, two.dy, label='xtrack')
+plt.ylabel('dispersion')
 
 plt.show()
-
-

@@ -4,6 +4,7 @@ import json
 import xobjects as xo
 
 fname = 'sler_1705_60_06_cw50_4b.twiss'
+fname = 'sler_1705_60_06_cw50_4b.dispg'
 
 with open(fname, 'r') as f:
     content = f.read()
@@ -11,7 +12,7 @@ with open(fname, 'r') as f:
 lines = content.split('\n')
 header = lines[0]
 
-content = '\n'.join(ll for ll in lines if 's(m)' not in ll)
+content = '\n'.join(ll for ll in lines if ('s(m)' not in ll and 'Length' not in ll))
 
 # prepend header
 content = header + '\n' + content
