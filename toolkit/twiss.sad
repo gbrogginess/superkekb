@@ -1,0 +1,27 @@
+ON ECHO;
+
+READ "../sler_1801_80_1.sad";
+
+FFS USE=ASC;
+NPARA=8;
+MOMENTUM = 4e+09;
+PBUNCH =35101697183.518524;
+MINCOUP =.03;
+FSHIFT =-2.8485169586629128e-06;
+
+CONVERGENCE=10^-32;
+RAD; ! Turn on radiation in all elements.
+NOFLUC; ! Turn off quantum effects.
+RADCOD; ! calculate orbit considering radiation loss
+RADTAPER; ! automatic tapering of all magnets according to local energy of the closed orbit.
+
+INS;
+CALCULATE;
+
+USE ASC;
+CELL;
+CALCULATE;
+
+(* ----------------------PRINT TWISS----------------------------------------- *)
+Get["./twiss.n"];
+SaveTwissFile["../twiss_sler_1801_80_1_sad.tfs"];
